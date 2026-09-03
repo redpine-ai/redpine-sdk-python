@@ -14,17 +14,24 @@ from .error import Error
 from .error_error import ErrorError
 from .filter_warning import FilterWarning
 from .journal_metric_expansion import JournalMetricExpansion
+from .preview_result import PreviewResult
+from .preview_result_metadata_type_0 import PreviewResultMetadataType0
+from .preview_unlock_response import PreviewUnlockResponse
 from .query_understanding import QueryUnderstanding
 from .query_understanding_filters import QueryUnderstandingFilters
 from .quota_info import QuotaInfo
 from .relevance_info import RelevanceInfo
 from .search_collection_body import SearchCollectionBody
 from .search_collection_body_filters_type_0 import SearchCollectionBodyFiltersType0
+from .search_preview_request import SearchPreviewRequest
+from .search_preview_request_filters_type_0 import SearchPreviewRequestFiltersType0
 from .search_request import SearchRequest
 from .search_request_filters_type_0 import SearchRequestFiltersType0
 from .search_response import SearchResponse
 from .search_result import SearchResult
 from .search_result_metadata_type_0 import SearchResultMetadataType0
+from .search_results_preview_response import SearchResultsPreviewResponse
+from .unlock_request import UnlockRequest
 
 __all__ = (
     "AssistedBillingInfo",
@@ -41,15 +48,22 @@ __all__ = (
     "ErrorError",
     "FilterWarning",
     "JournalMetricExpansion",
+    "PreviewResult",
+    "PreviewResultMetadataType0",
+    "PreviewUnlockResponse",
     "QueryUnderstanding",
     "QueryUnderstandingFilters",
     "QuotaInfo",
     "RelevanceInfo",
     "SearchCollectionBody",
     "SearchCollectionBodyFiltersType0",
+    "SearchPreviewRequest",
+    "SearchPreviewRequestFiltersType0",
     "SearchRequest",
     "SearchRequestFiltersType0",
     "SearchResponse",
     "SearchResult",
     "SearchResultMetadataType0",
+    "SearchResultsPreviewResponse",
+    "UnlockRequest",
 )

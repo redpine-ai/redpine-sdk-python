@@ -23,9 +23,11 @@ class SearchRequestFiltersType0:
     ["1234-5678"]}]}`.
 
     Indexed on every collection (any other field is matched by scanning and returns a `filterWarnings` entry):
-    `article_type`, `doc_id`, `doi`, `issn`, `journal`, `keywords`, `publication_date`, `publisher`, `section`.
+    `article_type`, `chapter_authors`, `chapter_number`, `chapter_title`, `doc_id`, `doi`, `isbn`, `issn`, `journal`,
+    `keywords`, `license`, `open_access`, `publication_date`, `publisher`, `section`.
 
-    Indexed on the editorial collections only (People Inc): `medical_board_approved`, `topic`, `url`.
+    Indexed on the editorial collections only (People Inc): `last_updated_date`, `medical_board_approved`, `topic`,
+    `url`.
 
     `issn` accepts hyphenated or bare, upper- or lower-case X (`"1664-302X"`, `"1664302x"`). `doi` is matched case-
     insensitively and an optional `https://doi.org/` or `doi:` prefix is accepted.

@@ -7,11 +7,11 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
-T = TypeVar("T", bound="SearchCollectionBodyFiltersType0")
+T = TypeVar("T", bound="SearchPreviewRequestFiltersType0")
 
 
 @_attrs_define
-class SearchCollectionBodyFiltersType0:
+class SearchPreviewRequestFiltersType0:
     """Optional metadata filter. Two accepted forms.
 
     Flat (top-level keys are ANDed): `{"journal": "Nature", "publication_date": {"gte": "2020-01-01"}}`.
@@ -49,10 +49,10 @@ class SearchCollectionBodyFiltersType0:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
-        search_collection_body_filters_type_0 = cls()
+        search_preview_request_filters_type_0 = cls()
 
-        search_collection_body_filters_type_0.additional_properties = d
-        return search_collection_body_filters_type_0
+        search_preview_request_filters_type_0.additional_properties = d
+        return search_preview_request_filters_type_0
 
     @property
     def additional_keys(self) -> list[str]:

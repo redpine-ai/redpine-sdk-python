@@ -46,8 +46,16 @@ class AccessDenied(RedpineError):
     """403: key has no access to the requested collection."""
 
 
+class InsufficientCredits(RedpineError):
+    """402: billing suspended, or not enough credits to unlock the requested rows."""
+
+
 class NotFound(RedpineError):
     """404: collection or queryId not found."""
+
+
+class Expired(RedpineError):
+    """410: the cached result or preview is past its 7-day window. Run the search again."""
 
 
 class ValidationError(RedpineError):
@@ -70,8 +78,10 @@ class AssistedUnavailable(RedpineError):
 
 _BY_STATUS: dict[int, type[RedpineError]] = {
     401: AuthError,
+    402: InsufficientCredits,
     403: AccessDenied,
     404: NotFound,
+    410: Expired,
     422: ValidationError,
     429: QuotaExceeded,
     503: AssistedUnavailable,

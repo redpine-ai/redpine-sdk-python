@@ -1,35 +1,40 @@
 from http import HTTPStatus
 from typing import Any
-from urllib.parse import quote
 
 import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.error import Error
-from ...models.search_results_preview_response import SearchResultsPreviewResponse
+from ...models.preview_unlock_response import PreviewUnlockResponse
+from ...models.unlock_request import UnlockRequest
 from ...types import Response
 
 
 def _get_kwargs(
-    query_id: str,
+    *,
+    body: UnlockRequest,
 ) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
     _kwargs: dict[str, Any] = {
-        "method": "get",
-        "url": "/api/v1/search/results/{query_id}".format(
-            query_id=quote(str(query_id), safe=""),
-        ),
+        "method": "post",
+        "url": "/api/v1/search/unlock",
     }
 
+    _kwargs["json"] = body.to_dict()
+
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
     return _kwargs
 
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Error | SearchResultsPreviewResponse | None:
+) -> Error | PreviewUnlockResponse | None:
     if response.status_code == 200:
-        response_200 = SearchResultsPreviewResponse.from_dict(response.json())
+        response_200 = PreviewUnlockResponse.from_dict(response.json())
 
         return response_200
 
@@ -37,6 +42,11 @@ def _parse_response(
         response_401 = Error.from_dict(response.json())
 
         return response_401
+
+    if response.status_code == 402:
+        response_402 = Error.from_dict(response.json())
+
+        return response_402
 
     if response.status_code == 404:
         response_404 = Error.from_dict(response.json())
@@ -48,6 +58,21 @@ def _parse_response(
 
         return response_410
 
+    if response.status_code == 422:
+        response_422 = Error.from_dict(response.json())
+
+        return response_422
+
+    if response.status_code == 429:
+        response_429 = Error.from_dict(response.json())
+
+        return response_429
+
+    if response.status_code == 503:
+        response_503 = Error.from_dict(response.json())
+
+        return response_503
+
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -56,7 +81,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Error | SearchResultsPreviewResponse]:
+) -> Response[Error | PreviewUnlockResponse]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -66,32 +91,29 @@ def _build_response(
 
 
 def sync_detailed(
-    query_id: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[Error | SearchResultsPreviewResponse]:
-    """Re-fetch cached results
+    body: UnlockRequest,
+) -> Response[Error | PreviewUnlockResponse]:
+    """Pay for previewed results and receive them in full
 
-     Retrieve previously returned search results using the queryId from a prior search response. Returns
-    the same results without billing. The request must use the same API key that performed the original
-    search. Results are available for 7 days.
-
-    Each result carries `locked`/`tokens`/`cost`: a result not yet paid for through POST
-    /api/v1/search/unlock comes back as a teaser (`locked: true`), never the full text.
+     Charges only for results not already unlocked by an earlier call against the same `queryId` -- re-
+    sending the same ids costs nothing. Omit `resultIds` (or pass `null`) to unlock everything from the
+    preview.
 
     Args:
-        query_id (str):
+        body (UnlockRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Error | SearchResultsPreviewResponse]
+        Response[Error | PreviewUnlockResponse]
     """
 
     kwargs = _get_kwargs(
-        query_id=query_id,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -102,63 +124,57 @@ def sync_detailed(
 
 
 def sync(
-    query_id: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Error | SearchResultsPreviewResponse | None:
-    """Re-fetch cached results
+    body: UnlockRequest,
+) -> Error | PreviewUnlockResponse | None:
+    """Pay for previewed results and receive them in full
 
-     Retrieve previously returned search results using the queryId from a prior search response. Returns
-    the same results without billing. The request must use the same API key that performed the original
-    search. Results are available for 7 days.
-
-    Each result carries `locked`/`tokens`/`cost`: a result not yet paid for through POST
-    /api/v1/search/unlock comes back as a teaser (`locked: true`), never the full text.
+     Charges only for results not already unlocked by an earlier call against the same `queryId` -- re-
+    sending the same ids costs nothing. Omit `resultIds` (or pass `null`) to unlock everything from the
+    preview.
 
     Args:
-        query_id (str):
+        body (UnlockRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Error | SearchResultsPreviewResponse
+        Error | PreviewUnlockResponse
     """
 
     return sync_detailed(
-        query_id=query_id,
         client=client,
+        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
-    query_id: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Response[Error | SearchResultsPreviewResponse]:
-    """Re-fetch cached results
+    body: UnlockRequest,
+) -> Response[Error | PreviewUnlockResponse]:
+    """Pay for previewed results and receive them in full
 
-     Retrieve previously returned search results using the queryId from a prior search response. Returns
-    the same results without billing. The request must use the same API key that performed the original
-    search. Results are available for 7 days.
-
-    Each result carries `locked`/`tokens`/`cost`: a result not yet paid for through POST
-    /api/v1/search/unlock comes back as a teaser (`locked: true`), never the full text.
+     Charges only for results not already unlocked by an earlier call against the same `queryId` -- re-
+    sending the same ids costs nothing. Omit `resultIds` (or pass `null`) to unlock everything from the
+    preview.
 
     Args:
-        query_id (str):
+        body (UnlockRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Error | SearchResultsPreviewResponse]
+        Response[Error | PreviewUnlockResponse]
     """
 
     kwargs = _get_kwargs(
-        query_id=query_id,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -167,33 +183,30 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    query_id: str,
     *,
     client: AuthenticatedClient | Client,
-) -> Error | SearchResultsPreviewResponse | None:
-    """Re-fetch cached results
+    body: UnlockRequest,
+) -> Error | PreviewUnlockResponse | None:
+    """Pay for previewed results and receive them in full
 
-     Retrieve previously returned search results using the queryId from a prior search response. Returns
-    the same results without billing. The request must use the same API key that performed the original
-    search. Results are available for 7 days.
-
-    Each result carries `locked`/`tokens`/`cost`: a result not yet paid for through POST
-    /api/v1/search/unlock comes back as a teaser (`locked: true`), never the full text.
+     Charges only for results not already unlocked by an earlier call against the same `queryId` -- re-
+    sending the same ids costs nothing. Omit `resultIds` (or pass `null`) to unlock everything from the
+    preview.
 
     Args:
-        query_id (str):
+        body (UnlockRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Error | SearchResultsPreviewResponse
+        Error | PreviewUnlockResponse
     """
 
     return (
         await asyncio_detailed(
-            query_id=query_id,
             client=client,
+            body=body,
         )
     ).parsed

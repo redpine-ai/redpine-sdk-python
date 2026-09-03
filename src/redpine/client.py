@@ -21,23 +21,32 @@ from ._generated.api.search import (
     list_collections,
     search_assisted,
     search_collection,
+    search_preview,
     search_query,
+    search_unlock,
 )
 from ._generated.client import AuthenticatedClient
 from ._generated.models import (
     AssistedSearchRequest,
     AssistedSearchResponse,
     CollectionsResponse,
+    PreviewUnlockResponse,
     QuotaInfo,
     SearchCollectionBody,
+    SearchPreviewRequest,
     SearchRequest,
     SearchResponse,
+    SearchResultsPreviewResponse,
+    UnlockRequest,
 )
 from ._generated.models.assisted_search_request_filters_type_0 import (
     AssistedSearchRequestFiltersType0,
 )
 from ._generated.models.search_collection_body_filters_type_0 import (
     SearchCollectionBodyFiltersType0,
+)
+from ._generated.models.search_preview_request_filters_type_0 import (
+    SearchPreviewRequestFiltersType0,
 )
 from ._generated.models.search_request_filters_type_0 import SearchRequestFiltersType0
 from ._generated.types import Response
@@ -215,7 +224,29 @@ class Redpine:
             body.filters = AssistedSearchRequestFiltersType0.from_dict(d)
         return self._call(search_assisted.sync_detailed, body=body)
 
-    def get_results(self, query_id: str) -> SearchResponse:
+    def preview(
+        self,
+        query: str,
+        *,
+        collection: str | None = None,
+        collections: list[str] | None = None,
+        limit: int = 10,
+        filters: Filter | dict | None = None,
+    ) -> PreviewUnlockResponse:
+        """Free: teaser rows plus the cost to unlock each. Never charged, never a quota slot."""
+        body = _preview_body(query, collection, collections, limit, filters)
+        return self._call(search_preview.sync_detailed, body=body)
+
+    def unlock(
+        self,
+        query_id: str,
+        *,
+        result_ids: list[str] | None = None,
+    ) -> PreviewUnlockResponse:
+        """Pay for previewed rows. `result_ids=None` unlocks every row; re-sending paid ids is free."""
+        return self._call(search_unlock.sync_detailed, body=_unlock_body(query_id, result_ids))
+
+    def get_results(self, query_id: str) -> SearchResultsPreviewResponse:
         return self._call(get_cached_result.sync_detailed, query_id)
 
     def quota(self) -> QuotaInfo:
@@ -223,6 +254,32 @@ class Redpine:
 
     def collections(self) -> CollectionsResponse:
         return self._call(list_collections.sync_detailed)
+
+
+def _preview_body(
+    query: str,
+    collection: str | None,
+    collections: list[str] | None,
+    limit: int,
+    filters: Filter | dict | None,
+) -> SearchPreviewRequest:
+    _one_target(collection, collections)
+    body = SearchPreviewRequest(query=query, limit=limit)
+    if collection is not None:
+        body.collection = collection
+    if collections:
+        body.collections = list(collections)
+    d = to_filter_dict(filters)
+    if d is not None:
+        body.filters = SearchPreviewRequestFiltersType0.from_dict(d)
+    return body
+
+
+def _unlock_body(query_id: str, result_ids: list[str] | None) -> UnlockRequest:
+    body = UnlockRequest(query_id=query_id)
+    if result_ids is not None:
+        body.result_ids = list(result_ids)
+    return body
 
 
 class AsyncRedpine:
@@ -336,7 +393,27 @@ class AsyncRedpine:
             body.filters = AssistedSearchRequestFiltersType0.from_dict(d)
         return await self._call(search_assisted.asyncio_detailed, body=body)
 
-    async def get_results(self, query_id: str) -> SearchResponse:
+    async def preview(
+        self,
+        query: str,
+        *,
+        collection: str | None = None,
+        collections: list[str] | None = None,
+        limit: int = 10,
+        filters: Filter | dict | None = None,
+    ) -> PreviewUnlockResponse:
+        body = _preview_body(query, collection, collections, limit, filters)
+        return await self._call(search_preview.asyncio_detailed, body=body)
+
+    async def unlock(
+        self,
+        query_id: str,
+        *,
+        result_ids: list[str] | None = None,
+    ) -> PreviewUnlockResponse:
+        return await self._call(search_unlock.asyncio_detailed, body=_unlock_body(query_id, result_ids))
+
+    async def get_results(self, query_id: str) -> SearchResultsPreviewResponse:
         return await self._call(get_cached_result.asyncio_detailed, query_id)
 
     async def quota(self) -> QuotaInfo:

@@ -5,6 +5,8 @@ from .errors import (
     AccessDenied,
     AssistedUnavailable,
     AuthError,
+    Expired,
+    InsufficientCredits,
     NotFound,
     QuotaExceeded,
     RedpineError,
@@ -12,15 +14,17 @@ from .errors import (
 )
 from .filters import F, Field, Filter
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 __all__ = [
     "AccessDenied",
     "AssistedUnavailable",
     "AsyncRedpine",
     "AuthError",
+    "Expired",
     "F",
     "Field",
     "Filter",
+    "InsufficientCredits",
     "NotFound",
     "QuotaExceeded",
     "Redpine",

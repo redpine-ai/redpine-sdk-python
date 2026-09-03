@@ -143,7 +143,14 @@ def test_assisted_search():
 @respx.mock
 def test_get_results_quota_collections():
     respx.get(f"{DEFAULT_BASE_URL}/api/v1/search/results/q-1").mock(
-        return_value=httpx.Response(200, json=SEARCH_OK)
+        return_value=httpx.Response(
+            200,
+            json={
+                "results": [{"id": "d1", "text": "hello", "locked": False}],
+                "queryId": "q-1",
+                "latencyMs": 0,
+            },
+        )
     )
     respx.get(f"{DEFAULT_BASE_URL}/api/v1/search/quota").mock(
         return_value=httpx.Response(
