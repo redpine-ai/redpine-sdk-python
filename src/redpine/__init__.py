@@ -12,7 +12,7 @@ from .errors import (
 )
 from .filters import F, Field, Filter
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __all__ = [
     "AccessDenied",
     "AssistedUnavailable",
