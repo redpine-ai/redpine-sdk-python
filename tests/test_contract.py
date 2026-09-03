@@ -11,7 +11,18 @@ import redpine
 from redpine import Redpine
 from redpine.client import DEFAULT_BASE_URL
 
-FIXTURES = sorted((Path(__file__).resolve().parents[2] / "spec" / "fixtures").glob("*.json"))
+
+def _fixtures_dir() -> Path:
+    here = Path(__file__).resolve()
+    # monorepo: python/tests -> ../../spec; public repo: tests -> ../spec
+    for candidate in (here.parents[2] / "spec" / "fixtures", here.parents[1] / "spec" / "fixtures"):
+        if candidate.is_dir():
+            return candidate
+    raise FileNotFoundError("spec/fixtures not found next to the package")
+
+
+FIXTURES = sorted(_fixtures_dir().glob("*.json"))
+assert FIXTURES, "spec/fixtures is empty"
 KEY = "sk_test_fake_contract"
 
 
