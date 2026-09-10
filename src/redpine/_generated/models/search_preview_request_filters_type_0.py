@@ -20,16 +20,19 @@ class SearchPreviewRequestFiltersType0:
     `not_in`, `gt`, `gte`, `lt`, `lte`, `between`. Combinators: `and`, `or`, `not`.
 
     Exclusion uses `ne` / `not_in` / `not` — there is no separate syntax: `{"and": [{"field": "issn", "not_in":
-    ["1234-5678"]}]}`.
+    ["1234-5679"]}]}`.
 
     Indexed on every collection (any other field is matched by scanning and returns a `filterWarnings` entry):
     `article_type`, `chapter_authors`, `chapter_number`, `chapter_title`, `doc_id`, `doi`, `isbn`, `issn`, `journal`,
-    `keywords`, `license`, `open_access`, `publication_date`, `publisher`, `section`.
+    `keywords`, `open_access`, `publication_date`, `publisher`, `section`.
 
-    Indexed on the editorial collections only (People Inc): `last_updated_date`, `medical_board_approved`, `topic`,
-    `url`.
+    Indexed on the editorial collections only: `last_updated_date`, `medical_board_approved`, `topic`, `url`.
 
-    `issn` accepts hyphenated or bare, upper- or lower-case X (`"1664-302X"`, `"1664302x"`). `doi` is matched case-
+    `open_access` is also answered for a collection that holds only open-access content and carries no such field:
+    `true` matches everything there, `false` (or the field under `or` / `not`) excludes that collection with a
+    `filterWarnings` entry. `license` is returned in result metadata but is not filterable.
+
+    `issn` accepts hyphenated or bare, upper- or lower-case X (`"1234-561X"`, `"1234561x"`). `doi` is matched case-
     insensitively and an optional `https://doi.org/` or `doi:` prefix is accepted.
 
     `journal_metric.2yr_mean_citedness`, `journal_metric.h_index` and `journal_metric.i10_index` accept range operators

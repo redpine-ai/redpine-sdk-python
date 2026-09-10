@@ -2,10 +2,8 @@
 
 Python client for the Redpine search API. Python 3.10+, sync and async.
 
-Not on PyPI yet; install from the public repository:
-
 ```bash
-pip install "redpine-sdk @ git+https://github.com/redpine-ai/redpine-sdk-python@v0.1.4"
+pip install redpine-sdk
 ```
 
 ```python
