@@ -8,14 +8,17 @@ from ...client import AuthenticatedClient, Client
 from ...models.error import Error
 from ...models.preview_unlock_response import PreviewUnlockResponse
 from ...models.search_preview_request import SearchPreviewRequest
-from ...types import Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
     body: SearchPreviewRequest,
+    idempotency_key: str | Unset = UNSET,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
+    if not isinstance(idempotency_key, Unset):
+        headers["Idempotency-Key"] = idempotency_key
 
     _kwargs: dict[str, Any] = {
         "method": "post",
@@ -53,6 +56,11 @@ def _parse_response(
 
         return response_404
 
+    if response.status_code == 409:
+        response_409 = Error.from_dict(response.json())
+
+        return response_409
+
     if response.status_code == 422:
         response_422 = Error.from_dict(response.json())
 
@@ -89,6 +97,7 @@ def sync_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: SearchPreviewRequest,
+    idempotency_key: str | Unset = UNSET,
 ) -> Response[Error | PreviewUnlockResponse]:
     """Preview search results without charging
 
@@ -100,7 +109,11 @@ def sync_detailed(
     Call POST /api/v1/search/unlock with the returned `queryId` to pay for and receive some or all of
     the results in full.
 
+    Send an `Idempotency-Key` header to make retries safe: a repeat with the same key and body returns
+    the original `queryId` instead of buying the same results again under a new one.
+
     Args:
+        idempotency_key (str | Unset):
         body (SearchPreviewRequest): The result-selection half of SearchRequest. A preview quotes
             results rather than delivering them, so it takes no content-delivery options: figures are
             never fetched (they are not priced into the quote) and metadata is always returned.
@@ -116,6 +129,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         body=body,
+        idempotency_key=idempotency_key,
     )
 
     response = client.get_httpx_client().request(
@@ -129,6 +143,7 @@ def sync(
     *,
     client: AuthenticatedClient | Client,
     body: SearchPreviewRequest,
+    idempotency_key: str | Unset = UNSET,
 ) -> Error | PreviewUnlockResponse | None:
     """Preview search results without charging
 
@@ -140,7 +155,11 @@ def sync(
     Call POST /api/v1/search/unlock with the returned `queryId` to pay for and receive some or all of
     the results in full.
 
+    Send an `Idempotency-Key` header to make retries safe: a repeat with the same key and body returns
+    the original `queryId` instead of buying the same results again under a new one.
+
     Args:
+        idempotency_key (str | Unset):
         body (SearchPreviewRequest): The result-selection half of SearchRequest. A preview quotes
             results rather than delivering them, so it takes no content-delivery options: figures are
             never fetched (they are not priced into the quote) and metadata is always returned.
@@ -157,6 +176,7 @@ def sync(
     return sync_detailed(
         client=client,
         body=body,
+        idempotency_key=idempotency_key,
     ).parsed
 
 
@@ -164,6 +184,7 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient | Client,
     body: SearchPreviewRequest,
+    idempotency_key: str | Unset = UNSET,
 ) -> Response[Error | PreviewUnlockResponse]:
     """Preview search results without charging
 
@@ -175,7 +196,11 @@ async def asyncio_detailed(
     Call POST /api/v1/search/unlock with the returned `queryId` to pay for and receive some or all of
     the results in full.
 
+    Send an `Idempotency-Key` header to make retries safe: a repeat with the same key and body returns
+    the original `queryId` instead of buying the same results again under a new one.
+
     Args:
+        idempotency_key (str | Unset):
         body (SearchPreviewRequest): The result-selection half of SearchRequest. A preview quotes
             results rather than delivering them, so it takes no content-delivery options: figures are
             never fetched (they are not priced into the quote) and metadata is always returned.
@@ -191,6 +216,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         body=body,
+        idempotency_key=idempotency_key,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -202,6 +228,7 @@ async def asyncio(
     *,
     client: AuthenticatedClient | Client,
     body: SearchPreviewRequest,
+    idempotency_key: str | Unset = UNSET,
 ) -> Error | PreviewUnlockResponse | None:
     """Preview search results without charging
 
@@ -213,7 +240,11 @@ async def asyncio(
     Call POST /api/v1/search/unlock with the returned `queryId` to pay for and receive some or all of
     the results in full.
 
+    Send an `Idempotency-Key` header to make retries safe: a repeat with the same key and body returns
+    the original `queryId` instead of buying the same results again under a new one.
+
     Args:
+        idempotency_key (str | Unset):
         body (SearchPreviewRequest): The result-selection half of SearchRequest. A preview quotes
             results rather than delivering them, so it takes no content-delivery options: figures are
             never fetched (they are not priced into the quote) and metadata is always returned.
@@ -231,5 +262,6 @@ async def asyncio(
         await asyncio_detailed(
             client=client,
             body=body,
+            idempotency_key=idempotency_key,
         )
     ).parsed

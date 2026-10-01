@@ -1,6 +1,6 @@
 [project]
 name = "redpine-sdk"
-version = "0.1.6"
+version = "0.1.7"
 description = "Python client for the Redpine search API"
 readme = "README.md"
 requires-python = ">=3.10"
