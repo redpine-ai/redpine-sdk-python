@@ -49,7 +49,7 @@ from ._generated.models.search_preview_request_filters_type_0 import (
     SearchPreviewRequestFiltersType0,
 )
 from ._generated.models.search_request_filters_type_0 import SearchRequestFiltersType0
-from ._generated.types import Response
+from ._generated.types import UNSET, Response
 from ._retry import backoff_seconds, should_retry
 from .errors import AuthError, QuotaExceeded, error_from_response
 from .filters import Filter, to_filter_dict
@@ -247,7 +247,7 @@ class Redpine:
         return self._call(search_unlock.sync_detailed, body=_unlock_body(query_id, result_ids))
 
     def get_results(self, query_id: str) -> SearchResultsPreviewResponse:
-        return self._call(get_cached_result.sync_detailed, query_id)
+        return self._call(get_cached_result.sync_detailed, query_id, **_NO_IMAGE_DEFAULTS)
 
     def quota(self) -> QuotaInfo:
         return self._call(get_quota.sync_detailed)
@@ -275,8 +275,26 @@ def _preview_body(
     return body
 
 
+# get_cached_result's generated kwargs default image options to on (matches UnlockRequest);
+# not exposed on get_results yet (matches Go/TS), so suppress them the same way.
+_NO_IMAGE_DEFAULTS: dict[str, Any] = {
+    "include_figures": UNSET,
+    "image_max_width": UNSET,
+    "image_max_height": UNSET,
+    "image_quality": UNSET,
+}
+
+
 def _unlock_body(query_id: str, result_ids: list[str] | None) -> UnlockRequest:
-    body = UnlockRequest(query_id=query_id)
+    # Image options aren't exposed on unlock yet (matches Go/TS) -- suppress the
+    # generated model's baked-in defaults so they aren't sent on every call.
+    body = UnlockRequest(
+        query_id=query_id,
+        image_max_height=UNSET,
+        image_max_width=UNSET,
+        image_quality=UNSET,
+        include_figures=UNSET,
+    )
     if result_ids is not None:
         body.result_ids = list(result_ids)
     return body
@@ -414,7 +432,7 @@ class AsyncRedpine:
         return await self._call(search_unlock.asyncio_detailed, body=_unlock_body(query_id, result_ids))
 
     async def get_results(self, query_id: str) -> SearchResultsPreviewResponse:
-        return await self._call(get_cached_result.asyncio_detailed, query_id)
+        return await self._call(get_cached_result.asyncio_detailed, query_id, **_NO_IMAGE_DEFAULTS)
 
     async def quota(self) -> QuotaInfo:
         return await self._call(get_quota.asyncio_detailed)

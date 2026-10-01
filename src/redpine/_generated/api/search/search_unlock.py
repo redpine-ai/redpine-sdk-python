@@ -101,6 +101,14 @@ def sync_detailed(
     sending the same ids costs nothing. Omit `resultIds` (or pass `null`) to unlock everything from the
     preview.
 
+    Set `includeFigures` to receive figure images as base64 in `metadata.figures[].image_data`. Images
+    are returned for every result unlocked under this `queryId`, including ones unlocked by an earlier
+    call -- so re-sending ids you have already paid for is how you fetch images you skipped the first
+    time, and it charges nothing. At most 50 images are fetched per call; the ids in `resultIds` (or,
+    when it is omitted, the results this call unlocked) get that budget first. Figures are free: they
+    are not priced into the token cost, so the flag changes latency and response size and never the
+    charge. Use the preview's `figureCount` to decide whether to ask.
+
     Args:
         body (UnlockRequest):
 
@@ -134,6 +142,14 @@ def sync(
     sending the same ids costs nothing. Omit `resultIds` (or pass `null`) to unlock everything from the
     preview.
 
+    Set `includeFigures` to receive figure images as base64 in `metadata.figures[].image_data`. Images
+    are returned for every result unlocked under this `queryId`, including ones unlocked by an earlier
+    call -- so re-sending ids you have already paid for is how you fetch images you skipped the first
+    time, and it charges nothing. At most 50 images are fetched per call; the ids in `resultIds` (or,
+    when it is omitted, the results this call unlocked) get that budget first. Figures are free: they
+    are not priced into the token cost, so the flag changes latency and response size and never the
+    charge. Use the preview's `figureCount` to decide whether to ask.
+
     Args:
         body (UnlockRequest):
 
@@ -161,6 +177,14 @@ async def asyncio_detailed(
      Charges only for results not already unlocked by an earlier call against the same `queryId` -- re-
     sending the same ids costs nothing. Omit `resultIds` (or pass `null`) to unlock everything from the
     preview.
+
+    Set `includeFigures` to receive figure images as base64 in `metadata.figures[].image_data`. Images
+    are returned for every result unlocked under this `queryId`, including ones unlocked by an earlier
+    call -- so re-sending ids you have already paid for is how you fetch images you skipped the first
+    time, and it charges nothing. At most 50 images are fetched per call; the ids in `resultIds` (or,
+    when it is omitted, the results this call unlocked) get that budget first. Figures are free: they
+    are not priced into the token cost, so the flag changes latency and response size and never the
+    charge. Use the preview's `figureCount` to decide whether to ask.
 
     Args:
         body (UnlockRequest):
@@ -192,6 +216,14 @@ async def asyncio(
      Charges only for results not already unlocked by an earlier call against the same `queryId` -- re-
     sending the same ids costs nothing. Omit `resultIds` (or pass `null`) to unlock everything from the
     preview.
+
+    Set `includeFigures` to receive figure images as base64 in `metadata.figures[].image_data`. Images
+    are returned for every result unlocked under this `queryId`, including ones unlocked by an earlier
+    call -- so re-sending ids you have already paid for is how you fetch images you skipped the first
+    time, and it charges nothing. At most 50 images are fetched per call; the ids in `resultIds` (or,
+    when it is omitted, the results this call unlocked) get that budget first. Figures are free: they
+    are not priced into the token cost, so the flag changes latency and response size and never the
+    charge. Use the preview's `figureCount` to decide whether to ask.
 
     Args:
         body (UnlockRequest):

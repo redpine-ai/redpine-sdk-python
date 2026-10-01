@@ -17,16 +17,38 @@ class UnlockRequest:
     """
     Attributes:
         query_id (str): The `queryId` from a previous POST /search/preview response.
+        image_max_height (int | Unset): Maximum image height in pixels Default: 600.
+        image_max_width (int | Unset): Maximum image width in pixels Default: 800.
+        image_quality (int | Unset): JPEG quality for fetched images Default: 75.
+        include_figures (bool | Unset): Fetch figure images, returned as base64 in each result's metadata. Candidates
+            are every result unlocked under this queryId, this call's and earlier calls' alike, but at most 50 images are
+            fetched per call: the ids in resultIds — or, when it is omitted, the results this call unlocked — get that
+            budget first, and figures past it come back as captions with no image_data. Ask again for the ids you still
+            want; re-sending ids already unlocked charges nothing. Free — figures are not priced into the token cost, so
+            this changes latency and response size, never the charge. Off by default: use the preview's figureCount to
+            decide. includeImages is a deprecated alias. Default: False.
         result_ids (list[str] | None | Unset): Result ids to unlock. Omit (or pass `null`) to unlock every result from
             the preview. Re-sending an id that is already unlocked costs nothing — only the delta is charged.
     """
 
     query_id: str
+    image_max_height: int | Unset = 600
+    image_max_width: int | Unset = 800
+    image_quality: int | Unset = 75
+    include_figures: bool | Unset = False
     result_ids: list[str] | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         query_id = self.query_id
+
+        image_max_height = self.image_max_height
+
+        image_max_width = self.image_max_width
+
+        image_quality = self.image_quality
+
+        include_figures = self.include_figures
 
         result_ids: list[str] | None | Unset
         if isinstance(self.result_ids, Unset):
@@ -44,6 +66,14 @@ class UnlockRequest:
                 "queryId": query_id,
             }
         )
+        if image_max_height is not UNSET:
+            field_dict["imageMaxHeight"] = image_max_height
+        if image_max_width is not UNSET:
+            field_dict["imageMaxWidth"] = image_max_width
+        if image_quality is not UNSET:
+            field_dict["imageQuality"] = image_quality
+        if include_figures is not UNSET:
+            field_dict["includeFigures"] = include_figures
         if result_ids is not UNSET:
             field_dict["resultIds"] = result_ids
 
@@ -53,6 +83,14 @@ class UnlockRequest:
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
         query_id = d.pop("queryId")
+
+        image_max_height = d.pop("imageMaxHeight", UNSET)
+
+        image_max_width = d.pop("imageMaxWidth", UNSET)
+
+        image_quality = d.pop("imageQuality", UNSET)
+
+        include_figures = d.pop("includeFigures", UNSET)
 
         def _parse_result_ids(data: object) -> list[str] | None | Unset:
             if data is None:
@@ -73,6 +111,10 @@ class UnlockRequest:
 
         unlock_request = cls(
             query_id=query_id,
+            image_max_height=image_max_height,
+            image_max_width=image_max_width,
+            image_quality=image_quality,
+            include_figures=include_figures,
             result_ids=result_ids,
         )
 

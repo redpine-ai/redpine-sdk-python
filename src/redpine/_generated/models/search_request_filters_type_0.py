@@ -17,14 +17,18 @@ class SearchRequestFiltersType0:
     Flat (top-level keys are ANDed): `{"journal": "Nature", "publication_date": {"gte": "2020-01-01"}}`.
 
     Structured DSL (for OR / nesting): `{"and": [{"field": "journal", "eq": "Nature"}]}`. Operators: `eq`, `ne`, `in`,
-    `not_in`, `gt`, `gte`, `lt`, `lte`, `between`. Combinators: `and`, `or`, `not`.
+    `not_in`, `gt`, `gte`, `lt`, `lte`, `between`. Combinators: `and`, `or`, `not`. One operator per condition, except
+    range bounds (`gt`, `gte`, `lt`, `lte`) together; put other combinations in separate conditions under `and`.
+
+    Mixing the flat and structured forms in one filter is rejected.
 
     Exclusion uses `ne` / `not_in` / `not` — there is no separate syntax: `{"and": [{"field": "issn", "not_in":
     ["1234-5679"]}]}`.
 
-    Indexed on every collection (any other field is matched by scanning and returns a `filterWarnings` entry):
-    `article_type`, `chapter_authors`, `chapter_number`, `chapter_title`, `doc_id`, `doi`, `isbn`, `issn`, `journal`,
-    `keywords`, `open_access`, `publication_date`, `publisher`, `section`.
+    Indexed on every collection (a field that is not a known result metadata field is rejected; a known field without an
+    index, such as `pmid`, is matched by scanning and returns a `filterWarnings` entry, and is rejected on a collection
+    that has no index for it): `article_type`, `chapter_authors`, `chapter_number`, `chapter_title`, `doi`, `isbn`,
+    `issn`, `journal`, `keywords`, `open_access`, `publication_date`, `publisher`, `section`.
 
     Indexed on the editorial collections only: `last_updated_date`, `medical_board_approved`, `topic`, `url`.
 

@@ -20,6 +20,9 @@ T = TypeVar("T", bound="PreviewResult")
 class PreviewResult:
     """
     Attributes:
+        figure_count (int): How many figures this result carries. Reported on locked rows too — the captions and images
+            stay behind the paywall, but the count is what tells you whether unlocking with includeFigures is worth it. 0
+            for text-only content. Default: 0.
         id (str): Chunk/point ID
         locked (bool): True when text is a teaser rather than the full chunk
         text (str): Full chunk text when `locked` is false. A short teaser snippet — never the full chunk — when
@@ -29,13 +32,16 @@ class PreviewResult:
         cost (None | str | Unset): Cost to unlock this one result.
         metadata (None | PreviewResultMetadataType0 | Unset): Document metadata (title, authors, journal, etc.). Always
             present on /search/preview and /search/unlock, which take no includeMetadata option. On /search/results it is
-            null when the original search set includeMetadata to false.
+            null when the original search set includeMetadata to false. `figures` (captions, and `image_data` when images
+            were requested) is present only on unlocked results — a locked result reports `figureCount` and nothing else
+            about its figures.
         tokens (int | None | Unset): Billable tokens to unlock this result.
     """
 
     id: str
     locked: bool
     text: str
+    figure_count: int = 0
     collection: None | str | Unset = UNSET
     cost: None | str | Unset = UNSET
     metadata: None | PreviewResultMetadataType0 | Unset = UNSET
@@ -44,6 +50,8 @@ class PreviewResult:
 
     def to_dict(self) -> dict[str, Any]:
         from ..models.preview_result_metadata_type_0 import PreviewResultMetadataType0
+
+        figure_count = self.figure_count
 
         id = self.id
 
@@ -81,6 +89,7 @@ class PreviewResult:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "figureCount": figure_count,
                 "id": id,
                 "locked": locked,
                 "text": text,
@@ -102,6 +111,8 @@ class PreviewResult:
         from ..models.preview_result_metadata_type_0 import PreviewResultMetadataType0
 
         d = dict(src_dict)
+        figure_count = d.pop("figureCount")
+
         id = d.pop("id")
 
         locked = d.pop("locked")
@@ -153,6 +164,7 @@ class PreviewResult:
         tokens = _parse_tokens(d.pop("tokens", UNSET))
 
         preview_result = cls(
+            figure_count=figure_count,
             id=id,
             locked=locked,
             text=text,

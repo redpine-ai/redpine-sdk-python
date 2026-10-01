@@ -12,6 +12,7 @@ from ..types import UNSET, Unset
 if TYPE_CHECKING:
     from ..models.filter_warning import FilterWarning
     from ..models.journal_metric_expansion import JournalMetricExpansion
+    from ..models.search_response_filters_applied_type_0 import SearchResponseFiltersAppliedType0
     from ..models.search_result import SearchResult
 
 
@@ -27,8 +28,11 @@ class SearchResponse:
             GET /api/v1/search/results/{queryId}.
         results (list[SearchResult]): Ranked list of matching document chunks.
         filter_warnings (list[FilterWarning] | None | Unset): Advisory warnings about the supplied filter — for example
-            filtering on a field with no payload index, which is matched by scanning. The search still runs. Omitted when
-            there are none.
+            filtering on a known field with no payload index, which is matched by scanning, or a collection excluded because
+            it holds only open-access content and the filter asked for open_access=false. The search still runs. Omitted
+            when there are none.
+        filters_applied (None | SearchResponseFiltersAppliedType0 | Unset): The filters you sent, after validation.
+            Omitted when no filters were sent.
         journal_metric_expansions (list[JournalMetricExpansion] | None | Unset): How each journal-metric condition
             resolved to ISSNs; omitted when no metric filter was used
     """
@@ -37,10 +41,15 @@ class SearchResponse:
     query_id: str
     results: list[SearchResult]
     filter_warnings: list[FilterWarning] | None | Unset = UNSET
+    filters_applied: None | SearchResponseFiltersAppliedType0 | Unset = UNSET
     journal_metric_expansions: list[JournalMetricExpansion] | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.search_response_filters_applied_type_0 import (
+            SearchResponseFiltersAppliedType0,
+        )
+
         latency_ms = self.latency_ms
 
         query_id = self.query_id
@@ -61,6 +70,14 @@ class SearchResponse:
 
         else:
             filter_warnings = self.filter_warnings
+
+        filters_applied: dict[str, Any] | None | Unset
+        if isinstance(self.filters_applied, Unset):
+            filters_applied = UNSET
+        elif isinstance(self.filters_applied, SearchResponseFiltersAppliedType0):
+            filters_applied = self.filters_applied.to_dict()
+        else:
+            filters_applied = self.filters_applied
 
         journal_metric_expansions: list[dict[str, Any]] | None | Unset
         if isinstance(self.journal_metric_expansions, Unset):
@@ -87,6 +104,8 @@ class SearchResponse:
         )
         if filter_warnings is not UNSET:
             field_dict["filterWarnings"] = filter_warnings
+        if filters_applied is not UNSET:
+            field_dict["filtersApplied"] = filters_applied
         if journal_metric_expansions is not UNSET:
             field_dict["journalMetricExpansions"] = journal_metric_expansions
 
@@ -96,6 +115,9 @@ class SearchResponse:
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         from ..models.filter_warning import FilterWarning
         from ..models.journal_metric_expansion import JournalMetricExpansion
+        from ..models.search_response_filters_applied_type_0 import (
+            SearchResponseFiltersAppliedType0,
+        )
         from ..models.search_result import SearchResult
 
         d = dict(src_dict)
@@ -134,6 +156,25 @@ class SearchResponse:
 
         filter_warnings = _parse_filter_warnings(d.pop("filterWarnings", UNSET))
 
+        def _parse_filters_applied(
+            data: object,
+        ) -> None | SearchResponseFiltersAppliedType0 | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                filters_applied_type_0 = SearchResponseFiltersAppliedType0.from_dict(data)
+
+                return filters_applied_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | SearchResponseFiltersAppliedType0 | Unset, data)
+
+        filters_applied = _parse_filters_applied(d.pop("filtersApplied", UNSET))
+
         def _parse_journal_metric_expansions(
             data: object,
         ) -> list[JournalMetricExpansion] | None | Unset:
@@ -167,6 +208,7 @@ class SearchResponse:
             query_id=query_id,
             results=results,
             filter_warnings=filter_warnings,
+            filters_applied=filters_applied,
             journal_metric_expansions=journal_metric_expansions,
         )
 

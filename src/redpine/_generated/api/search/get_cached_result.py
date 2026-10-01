@@ -8,18 +8,36 @@ from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.error import Error
 from ...models.search_results_preview_response import SearchResultsPreviewResponse
-from ...types import Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     query_id: str,
+    *,
+    include_figures: bool | Unset = False,
+    image_max_width: int | Unset = 800,
+    image_max_height: int | Unset = 600,
+    image_quality: int | Unset = 75,
 ) -> dict[str, Any]:
+
+    params: dict[str, Any] = {}
+
+    params["includeFigures"] = include_figures
+
+    params["imageMaxWidth"] = image_max_width
+
+    params["imageMaxHeight"] = image_max_height
+
+    params["imageQuality"] = image_quality
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/api/v1/search/results/{query_id}".format(
             query_id=quote(str(query_id), safe=""),
         ),
+        "params": params,
     }
 
     return _kwargs
@@ -69,6 +87,10 @@ def sync_detailed(
     query_id: str,
     *,
     client: AuthenticatedClient | Client,
+    include_figures: bool | Unset = False,
+    image_max_width: int | Unset = 800,
+    image_max_height: int | Unset = 600,
+    image_quality: int | Unset = 75,
 ) -> Response[Error | SearchResultsPreviewResponse]:
     """Re-fetch cached results
 
@@ -81,6 +103,10 @@ def sync_detailed(
 
     Args:
         query_id (str):
+        include_figures (bool | Unset):  Default: False.
+        image_max_width (int | Unset):  Default: 800.
+        image_max_height (int | Unset):  Default: 600.
+        image_quality (int | Unset):  Default: 75.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -92,6 +118,10 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         query_id=query_id,
+        include_figures=include_figures,
+        image_max_width=image_max_width,
+        image_max_height=image_max_height,
+        image_quality=image_quality,
     )
 
     response = client.get_httpx_client().request(
@@ -105,6 +135,10 @@ def sync(
     query_id: str,
     *,
     client: AuthenticatedClient | Client,
+    include_figures: bool | Unset = False,
+    image_max_width: int | Unset = 800,
+    image_max_height: int | Unset = 600,
+    image_quality: int | Unset = 75,
 ) -> Error | SearchResultsPreviewResponse | None:
     """Re-fetch cached results
 
@@ -117,6 +151,10 @@ def sync(
 
     Args:
         query_id (str):
+        include_figures (bool | Unset):  Default: False.
+        image_max_width (int | Unset):  Default: 800.
+        image_max_height (int | Unset):  Default: 600.
+        image_quality (int | Unset):  Default: 75.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -129,6 +167,10 @@ def sync(
     return sync_detailed(
         query_id=query_id,
         client=client,
+        include_figures=include_figures,
+        image_max_width=image_max_width,
+        image_max_height=image_max_height,
+        image_quality=image_quality,
     ).parsed
 
 
@@ -136,6 +178,10 @@ async def asyncio_detailed(
     query_id: str,
     *,
     client: AuthenticatedClient | Client,
+    include_figures: bool | Unset = False,
+    image_max_width: int | Unset = 800,
+    image_max_height: int | Unset = 600,
+    image_quality: int | Unset = 75,
 ) -> Response[Error | SearchResultsPreviewResponse]:
     """Re-fetch cached results
 
@@ -148,6 +194,10 @@ async def asyncio_detailed(
 
     Args:
         query_id (str):
+        include_figures (bool | Unset):  Default: False.
+        image_max_width (int | Unset):  Default: 800.
+        image_max_height (int | Unset):  Default: 600.
+        image_quality (int | Unset):  Default: 75.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -159,6 +209,10 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         query_id=query_id,
+        include_figures=include_figures,
+        image_max_width=image_max_width,
+        image_max_height=image_max_height,
+        image_quality=image_quality,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -170,6 +224,10 @@ async def asyncio(
     query_id: str,
     *,
     client: AuthenticatedClient | Client,
+    include_figures: bool | Unset = False,
+    image_max_width: int | Unset = 800,
+    image_max_height: int | Unset = 600,
+    image_quality: int | Unset = 75,
 ) -> Error | SearchResultsPreviewResponse | None:
     """Re-fetch cached results
 
@@ -182,6 +240,10 @@ async def asyncio(
 
     Args:
         query_id (str):
+        include_figures (bool | Unset):  Default: False.
+        image_max_width (int | Unset):  Default: 800.
+        image_max_height (int | Unset):  Default: 600.
+        image_quality (int | Unset):  Default: 75.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -195,5 +257,9 @@ async def asyncio(
         await asyncio_detailed(
             query_id=query_id,
             client=client,
+            include_figures=include_figures,
+            image_max_width=image_max_width,
+            image_max_height=image_max_height,
+            image_quality=image_quality,
         )
     ).parsed

@@ -146,7 +146,7 @@ def test_get_results_quota_collections():
         return_value=httpx.Response(
             200,
             json={
-                "results": [{"id": "d1", "text": "hello", "locked": False}],
+                "results": [{"id": "d1", "text": "hello", "locked": False, "figureCount": 0}],
                 "queryId": "q-1",
                 "latencyMs": 0,
             },

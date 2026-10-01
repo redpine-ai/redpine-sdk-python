@@ -26,8 +26,9 @@ class SearchResultsPreviewResponse:
         query_id (str): Unique identifier for this query, matching the original search response.
         results (list[PreviewResult]): Every result from the original search, filtered through the unlock ledger.
         filter_warnings (list[FilterWarning] | None | Unset): Advisory warnings about the supplied filter — for example
-            filtering on a field with no payload index, which is matched by scanning. The search still runs. Omitted when
-            there are none.
+            filtering on a known field with no payload index, which is matched by scanning, or a collection excluded because
+            it holds only open-access content and the filter asked for open_access=false. The search still runs. Omitted
+            when there are none.
         journal_metric_expansions (list[JournalMetricExpansion] | None | Unset): How each journal-metric condition
             resolved to ISSNs; omitted when no metric filter was used
     """

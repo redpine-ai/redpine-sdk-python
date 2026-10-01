@@ -7,17 +7,12 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
-T = TypeVar("T", bound="PreviewResultMetadataType0")
+T = TypeVar("T", bound="SearchResponseFiltersAppliedType0")
 
 
 @_attrs_define
-class PreviewResultMetadataType0:
-    """Document metadata (title, authors, journal, etc.). Always present on /search/preview and /search/unlock, which take
-    no includeMetadata option. On /search/results it is null when the original search set includeMetadata to false.
-    `figures` (captions, and `image_data` when images were requested) is present only on unlocked results — a locked
-    result reports `figureCount` and nothing else about its figures.
-
-    """
+class SearchResponseFiltersAppliedType0:
+    """The filters you sent, after validation. Omitted when no filters were sent."""
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -31,10 +26,10 @@ class PreviewResultMetadataType0:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
-        preview_result_metadata_type_0 = cls()
+        search_response_filters_applied_type_0 = cls()
 
-        preview_result_metadata_type_0.additional_properties = d
-        return preview_result_metadata_type_0
+        search_response_filters_applied_type_0.additional_properties = d
+        return search_response_filters_applied_type_0
 
     @property
     def additional_keys(self) -> list[str]:

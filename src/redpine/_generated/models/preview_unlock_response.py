@@ -13,6 +13,9 @@ if TYPE_CHECKING:
     from ..models.filter_warning import FilterWarning
     from ..models.journal_metric_expansion import JournalMetricExpansion
     from ..models.preview_result import PreviewResult
+    from ..models.preview_unlock_response_filters_applied_type_0 import (
+        PreviewUnlockResponseFiltersAppliedType0,
+    )
 
 
 T = TypeVar("T", bound="PreviewUnlockResponse")
@@ -31,10 +34,13 @@ class PreviewUnlockResponse:
         cost_charged (None | str | Unset): What THIS call charged — not a running total. Null on a preview (always free)
             and on an unlock whose entire delta was already unlocked.
         filter_warnings (list[FilterWarning] | None | Unset): Advisory warnings about the supplied filter — for example
-            filtering on a field with no payload index, which is matched by scanning. The search still runs. Omitted when
-            there are none.
-        journal_metric_expansions (list[JournalMetricExpansion] | None | Unset): What each journal-metric threshold
-            (e.g. impactFactor >= 5) expanded to. Omitted when no metric filter was used.
+            filtering on a known field with no payload index, which is matched by scanning, or a collection excluded because
+            it holds only open-access content and the filter asked for open_access=false. The search still runs. Omitted
+            when there are none.
+        filters_applied (None | PreviewUnlockResponseFiltersAppliedType0 | Unset): The filters you sent, after
+            validation. Omitted when no filters were sent.
+        journal_metric_expansions (list[JournalMetricExpansion] | None | Unset): How each journal-metric condition
+            resolved to ISSNs; omitted when no metric filter was used.
     """
 
     cost_to_unlock_remaining: str
@@ -42,10 +48,15 @@ class PreviewUnlockResponse:
     results: list[PreviewResult]
     cost_charged: None | str | Unset = UNSET
     filter_warnings: list[FilterWarning] | None | Unset = UNSET
+    filters_applied: None | PreviewUnlockResponseFiltersAppliedType0 | Unset = UNSET
     journal_metric_expansions: list[JournalMetricExpansion] | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.preview_unlock_response_filters_applied_type_0 import (
+            PreviewUnlockResponseFiltersAppliedType0,
+        )
+
         cost_to_unlock_remaining = self.cost_to_unlock_remaining
 
         query_id = self.query_id
@@ -72,6 +83,14 @@ class PreviewUnlockResponse:
 
         else:
             filter_warnings = self.filter_warnings
+
+        filters_applied: dict[str, Any] | None | Unset
+        if isinstance(self.filters_applied, Unset):
+            filters_applied = UNSET
+        elif isinstance(self.filters_applied, PreviewUnlockResponseFiltersAppliedType0):
+            filters_applied = self.filters_applied.to_dict()
+        else:
+            filters_applied = self.filters_applied
 
         journal_metric_expansions: list[dict[str, Any]] | None | Unset
         if isinstance(self.journal_metric_expansions, Unset):
@@ -100,6 +119,8 @@ class PreviewUnlockResponse:
             field_dict["costCharged"] = cost_charged
         if filter_warnings is not UNSET:
             field_dict["filterWarnings"] = filter_warnings
+        if filters_applied is not UNSET:
+            field_dict["filtersApplied"] = filters_applied
         if journal_metric_expansions is not UNSET:
             field_dict["journalMetricExpansions"] = journal_metric_expansions
 
@@ -110,6 +131,9 @@ class PreviewUnlockResponse:
         from ..models.filter_warning import FilterWarning
         from ..models.journal_metric_expansion import JournalMetricExpansion
         from ..models.preview_result import PreviewResult
+        from ..models.preview_unlock_response_filters_applied_type_0 import (
+            PreviewUnlockResponseFiltersAppliedType0,
+        )
 
         d = dict(src_dict)
         cost_to_unlock_remaining = d.pop("costToUnlockRemaining")
@@ -156,6 +180,25 @@ class PreviewUnlockResponse:
 
         filter_warnings = _parse_filter_warnings(d.pop("filterWarnings", UNSET))
 
+        def _parse_filters_applied(
+            data: object,
+        ) -> None | PreviewUnlockResponseFiltersAppliedType0 | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                filters_applied_type_0 = PreviewUnlockResponseFiltersAppliedType0.from_dict(data)
+
+                return filters_applied_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(None | PreviewUnlockResponseFiltersAppliedType0 | Unset, data)
+
+        filters_applied = _parse_filters_applied(d.pop("filtersApplied", UNSET))
+
         def _parse_journal_metric_expansions(
             data: object,
         ) -> list[JournalMetricExpansion] | None | Unset:
@@ -190,6 +233,7 @@ class PreviewUnlockResponse:
             results=results,
             cost_charged=cost_charged,
             filter_warnings=filter_warnings,
+            filters_applied=filters_applied,
             journal_metric_expansions=journal_metric_expansions,
         )
 

@@ -34,8 +34,9 @@ class AssistedSearchResponse:
         status (AssistedSearchResponseStatus): Outcome of the assisted search
         clarification (ClarificationInfo | None | Unset): Set only when status is `clarification_needed`.
         filter_warnings (list[FilterWarning] | None | Unset): Advisory warnings about the supplied filter — for example
-            filtering on a field with no payload index, which is matched by scanning. The search still runs. Omitted when
-            there are none.
+            filtering on a known field with no payload index, which is matched by scanning, or a collection excluded because
+            it holds only open-access content and the filter asked for open_access=false. The search still runs. Omitted
+            when there are none.
         journal_metric_expansions (list[JournalMetricExpansion] | None | Unset): How each journal-metric condition
             resolved to ISSNs; omitted when no metric filter was used
         results (list[AssistedSearchResult] | Unset): Verified results (empty unless status='results')
