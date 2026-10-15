@@ -43,3 +43,24 @@ async def test_async_retry_then_raise(monkeypatch):
         with pytest.raises(QuotaExceeded):
             await c.quota()
     assert route.call_count == 2 and len(slept) == 1
+
+
+@respx.mock
+async def test_async_assisted_search_waits_longer_by_default():
+    route = respx.post(f"{DEFAULT_BASE_URL}/api/v1/search/assisted").mock(
+        return_value=httpx.Response(
+            200,
+            json={
+                "status": "no_relevant_results",
+                "queryUnderstanding": {},
+                "billing": {"chargedResults": 0, "tokensCharged": 0},
+                "queryId": "q-4",
+                "latencyMs": 1,
+                "iterationsRun": 1,
+            },
+        )
+    )
+    async with AsyncRedpine(KEY) as c:
+        r = await c.assisted_search("q", collection="c")
+    assert r.status == "no_relevant_results"
+    assert route.calls.last.request.extensions["timeout"]["read"] == 120.0

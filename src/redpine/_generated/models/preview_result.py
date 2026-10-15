@@ -35,6 +35,9 @@ class PreviewResult:
             null when the original search set includeMetadata to false. `figures` (captions, and `image_data` when images
             were requested) is present only on unlocked results — a locked result reports `figureCount` and nothing else
             about its figures.
+        relevance (float | None | Unset): How well this passage answers the query, 0 to 1, rounded to three decimals. It
+            scores the passage, not the paper. Null when the result has no score, including rows cached before this field
+            existed.
         tokens (int | None | Unset): Billable tokens to unlock this result.
     """
 
@@ -45,6 +48,7 @@ class PreviewResult:
     collection: None | str | Unset = UNSET
     cost: None | str | Unset = UNSET
     metadata: None | PreviewResultMetadataType0 | Unset = UNSET
+    relevance: float | None | Unset = UNSET
     tokens: int | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -79,6 +83,12 @@ class PreviewResult:
         else:
             metadata = self.metadata
 
+        relevance: float | None | Unset
+        if isinstance(self.relevance, Unset):
+            relevance = UNSET
+        else:
+            relevance = self.relevance
+
         tokens: int | None | Unset
         if isinstance(self.tokens, Unset):
             tokens = UNSET
@@ -101,6 +111,8 @@ class PreviewResult:
             field_dict["cost"] = cost
         if metadata is not UNSET:
             field_dict["metadata"] = metadata
+        if relevance is not UNSET:
+            field_dict["relevance"] = relevance
         if tokens is not UNSET:
             field_dict["tokens"] = tokens
 
@@ -154,6 +166,15 @@ class PreviewResult:
 
         metadata = _parse_metadata(d.pop("metadata", UNSET))
 
+        def _parse_relevance(data: object) -> float | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(float | None | Unset, data)
+
+        relevance = _parse_relevance(d.pop("relevance", UNSET))
+
         def _parse_tokens(data: object) -> int | None | Unset:
             if data is None:
                 return data
@@ -171,6 +192,7 @@ class PreviewResult:
             collection=collection,
             cost=cost,
             metadata=metadata,
+            relevance=relevance,
             tokens=tokens,
         )
 

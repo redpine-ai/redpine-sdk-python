@@ -26,12 +26,16 @@ class SearchResult:
             collection reports the logical name rather than the physical one it resolves to. Always populated.
         metadata (None | SearchResultMetadataType0 | Unset): Document metadata (title, authors, journal, etc.). Null
             when includeMetadata is false.
+        relevance (float | None | Unset): How well this passage answers the query, 0 to 1, rounded to three decimals. It
+            scores the passage, not the paper. Null when the result has no score, including rows cached before this field
+            existed.
     """
 
     id: str
     text: str
     collection: None | str | Unset = UNSET
     metadata: None | SearchResultMetadataType0 | Unset = UNSET
+    relevance: float | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -55,6 +59,12 @@ class SearchResult:
         else:
             metadata = self.metadata
 
+        relevance: float | None | Unset
+        if isinstance(self.relevance, Unset):
+            relevance = UNSET
+        else:
+            relevance = self.relevance
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -67,6 +77,8 @@ class SearchResult:
             field_dict["collection"] = collection
         if metadata is not UNSET:
             field_dict["metadata"] = metadata
+        if relevance is not UNSET:
+            field_dict["relevance"] = relevance
 
         return field_dict
 
@@ -105,11 +117,21 @@ class SearchResult:
 
         metadata = _parse_metadata(d.pop("metadata", UNSET))
 
+        def _parse_relevance(data: object) -> float | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(float | None | Unset, data)
+
+        relevance = _parse_relevance(d.pop("relevance", UNSET))
+
         search_result = cls(
             id=id,
             text=text,
             collection=collection,
             metadata=metadata,
+            relevance=relevance,
         )
 
         search_result.additional_properties = d

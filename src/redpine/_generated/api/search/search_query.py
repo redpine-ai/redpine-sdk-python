@@ -93,9 +93,9 @@ def sync_detailed(
     """Search documents
 
      Search one or more collections using natural language or keyword queries. Results are ranked by
-    relevance using hybrid retrieval (dense + sparse + reranking). Pass `collections` (up to 5) to
-    search several collections in one call and receive a single merged, relevance-ranked list with per-
-    result origin labels.
+    relevance using hybrid retrieval (dense + sparse). Pass `collections` (up to 5) to search several
+    collections in one call and receive a single merged, relevance-ranked list with per-result origin
+    labels.
 
     Args:
         body (SearchRequest): Provide exactly one of `collection` (single) or `collections`
@@ -128,9 +128,9 @@ def sync(
     """Search documents
 
      Search one or more collections using natural language or keyword queries. Results are ranked by
-    relevance using hybrid retrieval (dense + sparse + reranking). Pass `collections` (up to 5) to
-    search several collections in one call and receive a single merged, relevance-ranked list with per-
-    result origin labels.
+    relevance using hybrid retrieval (dense + sparse). Pass `collections` (up to 5) to search several
+    collections in one call and receive a single merged, relevance-ranked list with per-result origin
+    labels.
 
     Args:
         body (SearchRequest): Provide exactly one of `collection` (single) or `collections`
@@ -158,9 +158,9 @@ async def asyncio_detailed(
     """Search documents
 
      Search one or more collections using natural language or keyword queries. Results are ranked by
-    relevance using hybrid retrieval (dense + sparse + reranking). Pass `collections` (up to 5) to
-    search several collections in one call and receive a single merged, relevance-ranked list with per-
-    result origin labels.
+    relevance using hybrid retrieval (dense + sparse). Pass `collections` (up to 5) to search several
+    collections in one call and receive a single merged, relevance-ranked list with per-result origin
+    labels.
 
     Args:
         body (SearchRequest): Provide exactly one of `collection` (single) or `collections`
@@ -191,9 +191,9 @@ async def asyncio(
     """Search documents
 
      Search one or more collections using natural language or keyword queries. Results are ranked by
-    relevance using hybrid retrieval (dense + sparse + reranking). Pass `collections` (up to 5) to
-    search several collections in one call and receive a single merged, relevance-ranked list with per-
-    result origin labels.
+    relevance using hybrid retrieval (dense + sparse). Pass `collections` (up to 5) to search several
+    collections in one call and receive a single merged, relevance-ranked list with per-result origin
+    labels.
 
     Args:
         body (SearchRequest): Provide exactly one of `collection` (single) or `collections`

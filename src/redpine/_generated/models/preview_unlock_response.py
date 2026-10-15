@@ -10,6 +10,7 @@ from typing_extensions import Self
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.discovery_answer import DiscoveryAnswer
     from ..models.filter_warning import FilterWarning
     from ..models.journal_metric_expansion import JournalMetricExpansion
     from ..models.preview_result import PreviewResult
@@ -33,6 +34,9 @@ class PreviewUnlockResponse:
         results (list[PreviewResult]): Every result from the query, filtered through the unlock ledger.
         cost_charged (None | str | Unset): What THIS call charged — not a running total. Null on a preview (always free)
             and on an unlock whose entire delta was already unlocked.
+        discovery (DiscoveryAnswer | None | Unset): A catalogue answer: what data sources, publishers or journals your
+            key can reach. Present only when the query asked about the catalogue rather than for literature; then `results`
+            is empty and nothing was charged (`X-Query-Cost: 0.000000`).
         filter_warnings (list[FilterWarning] | None | Unset): Advisory warnings about the supplied filter — for example
             filtering on a known field with no payload index, which is matched by scanning, or a collection excluded because
             it holds only open-access content and the filter asked for open_access=false. The search still runs. Omitted
@@ -47,12 +51,14 @@ class PreviewUnlockResponse:
     query_id: str
     results: list[PreviewResult]
     cost_charged: None | str | Unset = UNSET
+    discovery: DiscoveryAnswer | None | Unset = UNSET
     filter_warnings: list[FilterWarning] | None | Unset = UNSET
     filters_applied: None | PreviewUnlockResponseFiltersAppliedType0 | Unset = UNSET
     journal_metric_expansions: list[JournalMetricExpansion] | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        from ..models.discovery_answer import DiscoveryAnswer
         from ..models.preview_unlock_response_filters_applied_type_0 import (
             PreviewUnlockResponseFiltersAppliedType0,
         )
@@ -71,6 +77,14 @@ class PreviewUnlockResponse:
             cost_charged = UNSET
         else:
             cost_charged = self.cost_charged
+
+        discovery: dict[str, Any] | None | Unset
+        if isinstance(self.discovery, Unset):
+            discovery = UNSET
+        elif isinstance(self.discovery, DiscoveryAnswer):
+            discovery = self.discovery.to_dict()
+        else:
+            discovery = self.discovery
 
         filter_warnings: list[dict[str, Any]] | None | Unset
         if isinstance(self.filter_warnings, Unset):
@@ -117,6 +131,8 @@ class PreviewUnlockResponse:
         )
         if cost_charged is not UNSET:
             field_dict["costCharged"] = cost_charged
+        if discovery is not UNSET:
+            field_dict["discovery"] = discovery
         if filter_warnings is not UNSET:
             field_dict["filterWarnings"] = filter_warnings
         if filters_applied is not UNSET:
@@ -128,6 +144,7 @@ class PreviewUnlockResponse:
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
+        from ..models.discovery_answer import DiscoveryAnswer
         from ..models.filter_warning import FilterWarning
         from ..models.journal_metric_expansion import JournalMetricExpansion
         from ..models.preview_result import PreviewResult
@@ -155,6 +172,23 @@ class PreviewUnlockResponse:
             return cast(None | str | Unset, data)
 
         cost_charged = _parse_cost_charged(d.pop("costCharged", UNSET))
+
+        def _parse_discovery(data: object) -> DiscoveryAnswer | None | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                discovery_type_0 = DiscoveryAnswer.from_dict(data)
+
+                return discovery_type_0
+            except (TypeError, ValueError, AttributeError, KeyError):
+                pass
+            return cast(DiscoveryAnswer | None | Unset, data)
+
+        discovery = _parse_discovery(d.pop("discovery", UNSET))
 
         def _parse_filter_warnings(data: object) -> list[FilterWarning] | None | Unset:
             if data is None:
@@ -232,6 +266,7 @@ class PreviewUnlockResponse:
             query_id=query_id,
             results=results,
             cost_charged=cost_charged,
+            discovery=discovery,
             filter_warnings=filter_warnings,
             filters_applied=filters_applied,
             journal_metric_expansions=journal_metric_expansions,

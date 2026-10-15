@@ -41,7 +41,8 @@ class SearchCollectionBody:
                 on a collection that has no index for it): `article_type`, `chapter_authors`, `chapter_number`, `chapter_title`,
                 `doi`, `isbn`, `issn`, `journal`, `keywords`, `open_access`, `publication_date`, `publisher`, `section`.
 
-                Indexed on the editorial collections only: `last_updated_date`, `medical_board_approved`, `topic`, `url`.
+                Indexed on the editorial collections only: `has_results`, `last_updated_date`, `medical_board_approved`,
+                `nct_id`, `overall_status`, `phases`, `topic`, `url`.
 
                 `open_access` is also answered for a collection that holds only open-access content and carries no such field:
                 `true` matches everything there, `false` (or the field under `or` / `not`) excludes that collection with a

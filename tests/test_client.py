@@ -4,7 +4,7 @@ import httpx
 import pytest
 import respx
 
-from redpine import AccessDenied, AuthError, F, QuotaExceeded, Redpine
+from redpine import AccessDenied, AuthError, F, QuotaExceeded, Redpine, RedpineError
 from redpine.client import DEFAULT_BASE_URL, resolve_api_key, resolve_base_url
 
 KEY = "sk_test_fake_abc123"
@@ -138,6 +138,79 @@ def test_assisted_search():
     r = Redpine(KEY).assisted_search("why", collection="corpus", allow_clarification=False)
     assert r.status == "results" and r.query_id == "q-2"
     assert json.loads(route.calls.last.request.content)["allowClarification"] is False
+
+
+@respx.mock
+def test_assisted_search_case_note_fields():
+    payload = {
+        "status": "results",
+        "queryUnderstanding": {
+            "subQuestions": ["What causes the AV block?", "How is it treated?"],
+            "caseSummary": "Young adult with new AV block.",
+        },
+        "results": [
+            {
+                "id": "c1",
+                "text": "passage",
+                "relevance": {"judgeScore": 0.9, "rationale": "on point"},
+                "subQuestion": "How is it treated?",
+            }
+        ],
+        "billing": {"chargedResults": 1, "tokensCharged": 10},
+        "queryId": "q-3",
+        "latencyMs": 5,
+        "iterationsRun": 1,
+    }
+    respx.post(f"{DEFAULT_BASE_URL}/api/v1/search/assisted").mock(
+        return_value=httpx.Response(200, json=payload)
+    )
+    r = Redpine(KEY).assisted_search("a long case note", collection="corpus")
+    assert r.query_understanding.case_summary == "Young adult with new AV block."
+    assert r.query_understanding.sub_questions == [
+        "What causes the AV block?",
+        "How is it treated?",
+    ]
+    assert r.results[0].sub_question == "How is it treated?"
+
+
+def _read_timeout(route) -> float:
+    return route.calls.last.request.extensions["timeout"]["read"]
+
+
+@respx.mock
+def test_assisted_search_waits_longer_by_default():
+    assisted = respx.post(f"{DEFAULT_BASE_URL}/api/v1/search/assisted").mock(
+        return_value=httpx.Response(500)
+    )
+    plain = respx.post(f"{DEFAULT_BASE_URL}/api/v1/search/query").mock(
+        return_value=httpx.Response(200, json=SEARCH_OK)
+    )
+    c = Redpine(KEY)
+    with pytest.raises(RedpineError):
+        c.assisted_search("q", collection="corpus")
+    c.search("q", collection="corpus")
+    assert _read_timeout(assisted) == 120.0
+    assert _read_timeout(plain) == 30.0
+
+
+@respx.mock
+def test_explicit_timeout_applies_to_assisted_search():
+    assisted = respx.post(f"{DEFAULT_BASE_URL}/api/v1/search/assisted").mock(
+        return_value=httpx.Response(500)
+    )
+    with pytest.raises(RedpineError):
+        Redpine(KEY, timeout=10).assisted_search("q", collection="corpus")
+    assert _read_timeout(assisted) == 10.0
+
+
+@respx.mock
+def test_timeout_none_still_means_no_timeout():
+    assisted = respx.post(f"{DEFAULT_BASE_URL}/api/v1/search/assisted").mock(
+        return_value=httpx.Response(500)
+    )
+    with pytest.raises(RedpineError):
+        Redpine(KEY, timeout=None).assisted_search("q", collection="corpus")
+    assert _read_timeout(assisted) is None
 
 
 @respx.mock

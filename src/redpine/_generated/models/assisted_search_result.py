@@ -31,6 +31,8 @@ class AssistedSearchResult:
             Null when includeMetadata is false.
         section (None | str | Unset): Comma-joined source section(s) of the article, from the normalized vocabulary
             (abstract, introduction, background, methods, results, discussion, conclusion, case, supplementary, other)
+        sub_question (None | str | Unset): The sub-question of a multi-problem query that this result answers; null when
+            the query was answered as a single question
     """
 
     id: str
@@ -40,6 +42,7 @@ class AssistedSearchResult:
     doi_url: None | str | Unset = UNSET
     metadata: AssistedSearchResultMetadataType0 | None | Unset = UNSET
     section: None | str | Unset = UNSET
+    sub_question: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -79,6 +82,12 @@ class AssistedSearchResult:
         else:
             section = self.section
 
+        sub_question: None | str | Unset
+        if isinstance(self.sub_question, Unset):
+            sub_question = UNSET
+        else:
+            sub_question = self.sub_question
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -96,6 +105,8 @@ class AssistedSearchResult:
             field_dict["metadata"] = metadata
         if section is not UNSET:
             field_dict["section"] = section
+        if sub_question is not UNSET:
+            field_dict["subQuestion"] = sub_question
 
         return field_dict
 
@@ -157,6 +168,15 @@ class AssistedSearchResult:
 
         section = _parse_section(d.pop("section", UNSET))
 
+        def _parse_sub_question(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        sub_question = _parse_sub_question(d.pop("subQuestion", UNSET))
+
         assisted_search_result = cls(
             id=id,
             relevance=relevance,
@@ -165,6 +185,7 @@ class AssistedSearchResult:
             doi_url=doi_url,
             metadata=metadata,
             section=section,
+            sub_question=sub_question,
         )
 
         assisted_search_result.additional_properties = d

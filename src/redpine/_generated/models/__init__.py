@@ -10,6 +10,25 @@ from .assisted_search_result_metadata_type_0 import AssistedSearchResultMetadata
 from .clarification_info import ClarificationInfo
 from .collections_response import CollectionsResponse
 from .collections_response_collections_item import CollectionsResponseCollectionsItem
+from .discovery_answer import DiscoveryAnswer
+from .discovery_answer_intent import DiscoveryAnswerIntent
+from .discovery_callout import DiscoveryCallout
+from .discovery_callout_kind import DiscoveryCalloutKind
+from .discovery_collection_item import DiscoveryCollectionItem
+from .discovery_collection_item_kind import DiscoveryCollectionItemKind
+from .discovery_collection_item_price_range_type_0 import DiscoveryCollectionItemPriceRangeType0
+from .discovery_collection_item_price_range_type_0_per import (
+    DiscoveryCollectionItemPriceRangeType0Per,
+)
+from .discovery_journal_item import DiscoveryJournalItem
+from .discovery_journal_item_kind import DiscoveryJournalItemKind
+from .discovery_next_action import DiscoveryNextAction
+from .discovery_publisher_item import DiscoveryPublisherItem
+from .discovery_publisher_item_kind import DiscoveryPublisherItemKind
+from .discovery_scope import DiscoveryScope
+from .discovery_scope_ranked_by_type_1 import DiscoveryScopeRankedByType1
+from .discovery_scope_ranked_by_type_2_type_1 import DiscoveryScopeRankedByType2Type1
+from .discovery_scope_ranked_by_type_3_type_1 import DiscoveryScopeRankedByType3Type1
 from .error import Error
 from .error_error import ErrorError
 from .filter_warning import FilterWarning
@@ -46,6 +65,23 @@ __all__ = (
     "ClarificationInfo",
     "CollectionsResponse",
     "CollectionsResponseCollectionsItem",
+    "DiscoveryAnswer",
+    "DiscoveryAnswerIntent",
+    "DiscoveryCallout",
+    "DiscoveryCalloutKind",
+    "DiscoveryCollectionItem",
+    "DiscoveryCollectionItemKind",
+    "DiscoveryCollectionItemPriceRangeType0",
+    "DiscoveryCollectionItemPriceRangeType0Per",
+    "DiscoveryJournalItem",
+    "DiscoveryJournalItemKind",
+    "DiscoveryNextAction",
+    "DiscoveryPublisherItem",
+    "DiscoveryPublisherItemKind",
+    "DiscoveryScope",
+    "DiscoveryScopeRankedByType1",
+    "DiscoveryScopeRankedByType2Type1",
+    "DiscoveryScopeRankedByType3Type1",
     "Error",
     "ErrorError",
     "FilterWarning",

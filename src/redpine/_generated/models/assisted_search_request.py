@@ -20,7 +20,7 @@ T = TypeVar("T", bound="AssistedSearchRequest")
 class AssistedSearchRequest:
     """
     Attributes:
-        query (str): Search query text
+        query (str): Search query text, or a whole document such as a patient case or chart note (max 16000 characters)
         allow_clarification (bool | Unset): If true, the endpoint may return a clarifying question instead of results
             when the query is too underspecified. Set false if your client cannot do a follow-up turn. Default: True.
         collection (None | str | Unset): Collection to search. Provide either this or `collections`, not both.

@@ -1,6 +1,9 @@
 """Hand-written client over the generated core.
 
 Configuration is deliberately small: api key (arg or env), timeout, max_retries.
+Without an explicit timeout, calls wait 30 seconds and assisted search waits 120:
+assisted search reads whole documents and the server allows it up to 75 seconds.
+An explicit timeout applies to every call.
 The base URL is not a parameter — it is https://api.redpine.ai unless the
 REDPINE_BASE_URL environment variable says otherwise (used for staging smoke
 tests and local mocks; not part of the documented surface).
@@ -58,6 +61,15 @@ DEFAULT_BASE_URL = "https://api.redpine.ai"
 ENV_API_KEY = "REDPINE_API_KEY"
 ENV_API_KEY_FALLBACK = "CONNECT_API_KEY"
 ENV_BASE_URL = "REDPINE_BASE_URL"
+DEFAULT_TIMEOUT = 30.0
+ASSISTED_TIMEOUT = 120.0
+
+
+class _DefaultTimeout:
+    """Marks an omitted timeout. None stays what it always was: no timeout."""
+
+
+_DEFAULT = _DefaultTimeout()
 
 
 def resolve_api_key(explicit: str | None) -> str:
@@ -79,6 +91,26 @@ def resolve_base_url() -> str:
     if not trimmed:
         raise ValueError(f"{ENV_BASE_URL} is set but empty")
     return trimmed
+
+
+def _make_clients(
+    api_key: str | None, timeout: float | None | _DefaultTimeout
+) -> tuple[AuthenticatedClient, AuthenticatedClient]:
+    """The client for ordinary calls and the one for assisted search.
+
+    They are the same client when the caller chose a timeout, None included.
+    """
+    base_url, token = resolve_base_url(), resolve_api_key(api_key)
+
+    def make(t: float | None) -> AuthenticatedClient:
+        return AuthenticatedClient(
+            base_url=base_url, token=token, timeout=t, raise_on_unexpected_status=False
+        )
+
+    if not isinstance(timeout, _DefaultTimeout):
+        one = make(timeout)
+        return one, one
+    return make(DEFAULT_TIMEOUT), make(ASSISTED_TIMEOUT)
 
 
 def _one_target(collection: str | None, collections: list[str] | None) -> None:
@@ -120,21 +152,18 @@ class Redpine:
         self,
         api_key: str | None = None,
         *,
-        timeout: float = 30.0,
+        timeout: float | None | _DefaultTimeout = _DEFAULT,
         max_retries: int = 2,
     ) -> None:
         self._max_retries = max_retries
-        self._client = AuthenticatedClient(
-            base_url=resolve_base_url(),
-            token=resolve_api_key(api_key),
-            timeout=timeout,
-            raise_on_unexpected_status=False,
-        )
+        self._client, self._assisted_client = _make_clients(api_key, timeout)
 
     # --- lifecycle -----------------------------------------------------------
 
     def close(self) -> None:
         self._client.get_httpx_client().close()
+        if self._assisted_client is not self._client:
+            self._assisted_client.get_httpx_client().close()
 
     def __enter__(self) -> Self:
         return self
@@ -144,10 +173,10 @@ class Redpine:
 
     # --- core call with retry -----------------------------------------------
 
-    def _call(self, fn, *args: Any, **kwargs: Any):
+    def _call(self, fn, *args: Any, http: AuthenticatedClient | None = None, **kwargs: Any):
         attempt = 0
         while True:
-            resp: Response = fn(*args, client=self._client, **kwargs)
+            resp: Response = fn(*args, client=http or self._client, **kwargs)
             if 200 <= resp.status_code < 300:
                 return resp.parsed
             if should_retry(resp.status_code, attempt, self._max_retries):
@@ -222,7 +251,7 @@ class Redpine:
         d = to_filter_dict(filters)
         if d is not None:
             body.filters = AssistedSearchRequestFiltersType0.from_dict(d)
-        return self._call(search_assisted.sync_detailed, body=body)
+        return self._call(search_assisted.sync_detailed, body=body, http=self._assisted_client)
 
     def preview(
         self,
@@ -307,21 +336,18 @@ class AsyncRedpine:
         self,
         api_key: str | None = None,
         *,
-        timeout: float = 30.0,
+        timeout: float | None | _DefaultTimeout = _DEFAULT,
         max_retries: int = 2,
     ) -> None:
         self._max_retries = max_retries
-        self._client = AuthenticatedClient(
-            base_url=resolve_base_url(),
-            token=resolve_api_key(api_key),
-            timeout=timeout,
-            raise_on_unexpected_status=False,
-        )
+        self._client, self._assisted_client = _make_clients(api_key, timeout)
 
     # --- lifecycle -----------------------------------------------------------
 
     async def aclose(self) -> None:
         await self._client.get_async_httpx_client().aclose()
+        if self._assisted_client is not self._client:
+            await self._assisted_client.get_async_httpx_client().aclose()
 
     async def __aenter__(self) -> Self:
         return self
@@ -331,10 +357,10 @@ class AsyncRedpine:
 
     # --- core call with retry -----------------------------------------------
 
-    async def _call(self, fn, *args: Any, **kwargs: Any):
+    async def _call(self, fn, *args: Any, http: AuthenticatedClient | None = None, **kwargs: Any):
         attempt = 0
         while True:
-            resp: Response = await fn(*args, client=self._client, **kwargs)
+            resp: Response = await fn(*args, client=http or self._client, **kwargs)
             if 200 <= resp.status_code < 300:
                 return resp.parsed
             if should_retry(resp.status_code, attempt, self._max_retries):
@@ -409,7 +435,9 @@ class AsyncRedpine:
         d = to_filter_dict(filters)
         if d is not None:
             body.filters = AssistedSearchRequestFiltersType0.from_dict(d)
-        return await self._call(search_assisted.asyncio_detailed, body=body)
+        return await self._call(
+            search_assisted.asyncio_detailed, body=body, http=self._assisted_client
+        )
 
     async def preview(
         self,
