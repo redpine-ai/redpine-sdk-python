@@ -7,9 +7,6 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from typing_extensions import Self
 
-from ..models.discovery_scope_ranked_by_type_1 import DiscoveryScopeRankedByType1
-from ..models.discovery_scope_ranked_by_type_2_type_1 import DiscoveryScopeRankedByType2Type1
-from ..models.discovery_scope_ranked_by_type_3_type_1 import DiscoveryScopeRankedByType3Type1
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
@@ -34,8 +31,8 @@ class DiscoveryScope:
         note (None | str | Unset): A caveat about this block, when any
         offset (int | Unset): Rank of the first item in this page, zero-based Default: 0.
         publishers (list[str] | Unset): Publishers present in your scope of this collection
-        ranked_by (DiscoveryScopeRankedByType1 | DiscoveryScopeRankedByType2Type1 | DiscoveryScopeRankedByType3Type1 |
-            None | Unset): How items are ordered
+        ranked_by (None | str | Unset): How items are ordered: `h_index` or `relevant_content`; null when the items are
+            not ranked
         sampled_entries (int | Unset): ISSN groups seen in the corpus but unknown to the metrics table; never counted as
             proved journals Default: 0.
         shown (int | Unset): Items in this page (and rendered in the text form) Default: 0.
@@ -56,13 +53,7 @@ class DiscoveryScope:
     note: None | str | Unset = UNSET
     offset: int | Unset = 0
     publishers: list[str] | Unset = UNSET
-    ranked_by: (
-        DiscoveryScopeRankedByType1
-        | DiscoveryScopeRankedByType2Type1
-        | DiscoveryScopeRankedByType3Type1
-        | None
-        | Unset
-    ) = UNSET
+    ranked_by: None | str | Unset = UNSET
     sampled_entries: int | Unset = 0
     shown: int | Unset = 0
     title_only: int | Unset = 0
@@ -112,12 +103,6 @@ class DiscoveryScope:
         ranked_by: None | str | Unset
         if isinstance(self.ranked_by, Unset):
             ranked_by = UNSET
-        elif (
-            isinstance(self.ranked_by, DiscoveryScopeRankedByType1)
-            or isinstance(self.ranked_by, DiscoveryScopeRankedByType2Type1)
-            or isinstance(self.ranked_by, DiscoveryScopeRankedByType3Type1)
-        ):
-            ranked_by = self.ranked_by.value
         else:
             ranked_by = self.ranked_by
 
@@ -239,51 +224,12 @@ class DiscoveryScope:
 
         publishers = cast(list[str], d.pop("publishers", UNSET))
 
-        def _parse_ranked_by(
-            data: object,
-        ) -> (
-            DiscoveryScopeRankedByType1
-            | DiscoveryScopeRankedByType2Type1
-            | DiscoveryScopeRankedByType3Type1
-            | None
-            | Unset
-        ):
+        def _parse_ranked_by(data: object) -> None | str | Unset:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            try:
-                if not isinstance(data, str):
-                    raise TypeError()
-                ranked_by_type_1 = DiscoveryScopeRankedByType1(data)
-
-                return ranked_by_type_1
-            except (TypeError, ValueError, AttributeError, KeyError):
-                pass
-            try:
-                if not isinstance(data, str):
-                    raise TypeError()
-                ranked_by_type_2_type_1 = DiscoveryScopeRankedByType2Type1(data)
-
-                return ranked_by_type_2_type_1
-            except (TypeError, ValueError, AttributeError, KeyError):
-                pass
-            try:
-                if not isinstance(data, str):
-                    raise TypeError()
-                ranked_by_type_3_type_1 = DiscoveryScopeRankedByType3Type1(data)
-
-                return ranked_by_type_3_type_1
-            except (TypeError, ValueError, AttributeError, KeyError):
-                pass
-            return cast(
-                DiscoveryScopeRankedByType1
-                | DiscoveryScopeRankedByType2Type1
-                | DiscoveryScopeRankedByType3Type1
-                | None
-                | Unset,
-                data,
-            )
+            return cast(None | str | Unset, data)
 
         ranked_by = _parse_ranked_by(d.pop("rankedBy", UNSET))
 

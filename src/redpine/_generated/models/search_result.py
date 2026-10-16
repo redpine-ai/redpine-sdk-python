@@ -26,9 +26,8 @@ class SearchResult:
             collection reports the logical name rather than the physical one it resolves to. Always populated.
         metadata (None | SearchResultMetadataType0 | Unset): Document metadata (title, authors, journal, etc.). Null
             when includeMetadata is false.
-        relevance (float | None | Unset): How well this passage answers the query, 0 to 1, rounded to three decimals. It
-            scores the passage, not the paper. Null when the result has no score, including rows cached before this field
-            existed.
+        relevance (float | None | Unset): How well this passage answers the query, 0 to 1, rounded to three decimals.
+            Null when the result has no score, including rows cached before this field existed.
     """
 
     id: str

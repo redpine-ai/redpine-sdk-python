@@ -17,59 +17,51 @@ T = TypeVar("T", bound="DiscoveryPublisherItem")
 class DiscoveryPublisherItem:
     """
     Attributes:
+        kind (DiscoveryPublisherItemKind):  Default: DiscoveryPublisherItemKind.PUBLISHER.
         name (str): Publisher name as stored in the corpus
         collections (list[str] | Unset): Collections (display names) it appears in
-        kind (DiscoveryPublisherItemKind | Unset):  Default: DiscoveryPublisherItemKind.PUBLISHER.
     """
 
     name: str
+    kind: DiscoveryPublisherItemKind = DiscoveryPublisherItemKind.PUBLISHER
     collections: list[str] | Unset = UNSET
-    kind: DiscoveryPublisherItemKind | Unset = DiscoveryPublisherItemKind.PUBLISHER
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        kind = self.kind.value
+
         name = self.name
 
         collections: list[str] | Unset = UNSET
         if not isinstance(self.collections, Unset):
             collections = self.collections
 
-        kind: str | Unset = UNSET
-        if not isinstance(self.kind, Unset):
-            kind = self.kind.value
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "kind": kind,
                 "name": name,
             }
         )
         if collections is not UNSET:
             field_dict["collections"] = collections
-        if kind is not UNSET:
-            field_dict["kind"] = kind
 
         return field_dict
 
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
+        kind = DiscoveryPublisherItemKind(d.pop("kind"))
+
         name = d.pop("name")
 
         collections = cast(list[str], d.pop("collections", UNSET))
 
-        _kind = d.pop("kind", UNSET)
-        kind: DiscoveryPublisherItemKind | Unset
-        if isinstance(_kind, Unset):
-            kind = UNSET
-        else:
-            kind = DiscoveryPublisherItemKind(_kind)
-
         discovery_publisher_item = cls(
+            kind=kind,
             name=name,
             collections=collections,
-            kind=kind,
         )
 
         discovery_publisher_item.additional_properties = d

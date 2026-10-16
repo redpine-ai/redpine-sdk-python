@@ -17,6 +17,7 @@ T = TypeVar("T", bound="DiscoveryJournalItem")
 class DiscoveryJournalItem:
     """
     Attributes:
+        kind (DiscoveryJournalItemKind):  Default: DiscoveryJournalItemKind.JOURNAL.
         title (str): Journal title
         h_index (int | None | Unset): h-index (OpenAlex), null when unknown
         impact_factor (float | None | Unset): The journal's journal_metric.impact_factor: an impact factor computed by
@@ -25,20 +26,21 @@ class DiscoveryJournalItem:
             JCR figure, because OpenAlex classifies those items as articles. Null when unknown.
         issn_l (None | str | Unset): Linking ISSN when the journal is known to the metrics table
         issns (list[str] | Unset): The journal's ISSNs present in your scope; filter on these to search it
-        kind (DiscoveryJournalItemKind | Unset):  Default: DiscoveryJournalItemKind.JOURNAL.
         publisher (None | str | Unset): Publisher, when known
     """
 
     title: str
+    kind: DiscoveryJournalItemKind = DiscoveryJournalItemKind.JOURNAL
     h_index: int | None | Unset = UNSET
     impact_factor: float | None | Unset = UNSET
     issn_l: None | str | Unset = UNSET
     issns: list[str] | Unset = UNSET
-    kind: DiscoveryJournalItemKind | Unset = DiscoveryJournalItemKind.JOURNAL
     publisher: None | str | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        kind = self.kind.value
+
         title = self.title
 
         h_index: int | None | Unset
@@ -63,10 +65,6 @@ class DiscoveryJournalItem:
         if not isinstance(self.issns, Unset):
             issns = self.issns
 
-        kind: str | Unset = UNSET
-        if not isinstance(self.kind, Unset):
-            kind = self.kind.value
-
         publisher: None | str | Unset
         if isinstance(self.publisher, Unset):
             publisher = UNSET
@@ -77,6 +75,7 @@ class DiscoveryJournalItem:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "kind": kind,
                 "title": title,
             }
         )
@@ -88,8 +87,6 @@ class DiscoveryJournalItem:
             field_dict["issnL"] = issn_l
         if issns is not UNSET:
             field_dict["issns"] = issns
-        if kind is not UNSET:
-            field_dict["kind"] = kind
         if publisher is not UNSET:
             field_dict["publisher"] = publisher
 
@@ -98,6 +95,8 @@ class DiscoveryJournalItem:
     @classmethod
     def from_dict(cls, src_dict: Mapping[str, Any]) -> Self:
         d = dict(src_dict)
+        kind = DiscoveryJournalItemKind(d.pop("kind"))
+
         title = d.pop("title")
 
         def _parse_h_index(data: object) -> int | None | Unset:
@@ -129,13 +128,6 @@ class DiscoveryJournalItem:
 
         issns = cast(list[str], d.pop("issns", UNSET))
 
-        _kind = d.pop("kind", UNSET)
-        kind: DiscoveryJournalItemKind | Unset
-        if isinstance(_kind, Unset):
-            kind = UNSET
-        else:
-            kind = DiscoveryJournalItemKind(_kind)
-
         def _parse_publisher(data: object) -> None | str | Unset:
             if data is None:
                 return data
@@ -146,12 +138,12 @@ class DiscoveryJournalItem:
         publisher = _parse_publisher(d.pop("publisher", UNSET))
 
         discovery_journal_item = cls(
+            kind=kind,
             title=title,
             h_index=h_index,
             impact_factor=impact_factor,
             issn_l=issn_l,
             issns=issns,
-            kind=kind,
             publisher=publisher,
         )
 

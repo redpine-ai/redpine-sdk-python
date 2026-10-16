@@ -26,9 +26,6 @@ from .discovery_next_action import DiscoveryNextAction
 from .discovery_publisher_item import DiscoveryPublisherItem
 from .discovery_publisher_item_kind import DiscoveryPublisherItemKind
 from .discovery_scope import DiscoveryScope
-from .discovery_scope_ranked_by_type_1 import DiscoveryScopeRankedByType1
-from .discovery_scope_ranked_by_type_2_type_1 import DiscoveryScopeRankedByType2Type1
-from .discovery_scope_ranked_by_type_3_type_1 import DiscoveryScopeRankedByType3Type1
 from .error import Error
 from .error_error import ErrorError
 from .filter_warning import FilterWarning
@@ -79,9 +76,6 @@ __all__ = (
     "DiscoveryPublisherItem",
     "DiscoveryPublisherItemKind",
     "DiscoveryScope",
-    "DiscoveryScopeRankedByType1",
-    "DiscoveryScopeRankedByType2Type1",
-    "DiscoveryScopeRankedByType3Type1",
     "Error",
     "ErrorError",
     "FilterWarning",

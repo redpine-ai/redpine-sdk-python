@@ -35,9 +35,8 @@ class PreviewResult:
             null when the original search set includeMetadata to false. `figures` (captions, and `image_data` when images
             were requested) is present only on unlocked results — a locked result reports `figureCount` and nothing else
             about its figures.
-        relevance (float | None | Unset): How well this passage answers the query, 0 to 1, rounded to three decimals. It
-            scores the passage, not the paper. Null when the result has no score, including rows cached before this field
-            existed.
+        relevance (float | None | Unset): How well this passage answers the query, 0 to 1, rounded to three decimals.
+            Null when the result has no score, including rows cached before this field existed.
         tokens (int | None | Unset): Billable tokens to unlock this result.
     """
 

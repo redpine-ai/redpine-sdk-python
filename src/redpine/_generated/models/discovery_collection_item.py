@@ -25,10 +25,10 @@ class DiscoveryCollectionItem:
     Attributes:
         collection_kind (str): physical, publisher, journal, curated or meta
         display_name (str): Display name
+        kind (DiscoveryCollectionItemKind):  Default: DiscoveryCollectionItemKind.COLLECTION.
         name (str): Collection name to pass to search
         revenue_model (str): licensed or open_access
         description (None | str | Unset): Collection description
-        kind (DiscoveryCollectionItemKind | Unset):  Default: DiscoveryCollectionItemKind.COLLECTION.
         members (list[str] | None | Unset): Member display names (metas only)
         price_per_1000 (None | str | Unset): Your organisation's price per 1000 tokens, when a single price applies
         price_range (DiscoveryCollectionItemPriceRangeType0 | None | Unset): Min/max member price when a meta-
@@ -39,8 +39,8 @@ class DiscoveryCollectionItem:
     display_name: str
     name: str
     revenue_model: str
+    kind: DiscoveryCollectionItemKind = DiscoveryCollectionItemKind.COLLECTION
     description: None | str | Unset = UNSET
-    kind: DiscoveryCollectionItemKind | Unset = DiscoveryCollectionItemKind.COLLECTION
     members: list[str] | None | Unset = UNSET
     price_per_1000: None | str | Unset = UNSET
     price_range: DiscoveryCollectionItemPriceRangeType0 | None | Unset = UNSET
@@ -55,6 +55,8 @@ class DiscoveryCollectionItem:
 
         display_name = self.display_name
 
+        kind = self.kind.value
+
         name = self.name
 
         revenue_model = self.revenue_model
@@ -64,10 +66,6 @@ class DiscoveryCollectionItem:
             description = UNSET
         else:
             description = self.description
-
-        kind: str | Unset = UNSET
-        if not isinstance(self.kind, Unset):
-            kind = self.kind.value
 
         members: list[str] | None | Unset
         if isinstance(self.members, Unset):
@@ -98,14 +96,13 @@ class DiscoveryCollectionItem:
             {
                 "collectionKind": collection_kind,
                 "displayName": display_name,
+                "kind": kind,
                 "name": name,
                 "revenueModel": revenue_model,
             }
         )
         if description is not UNSET:
             field_dict["description"] = description
-        if kind is not UNSET:
-            field_dict["kind"] = kind
         if members is not UNSET:
             field_dict["members"] = members
         if price_per_1000 is not UNSET:
@@ -126,6 +123,8 @@ class DiscoveryCollectionItem:
 
         display_name = d.pop("displayName")
 
+        kind = DiscoveryCollectionItemKind(d.pop("kind"))
+
         name = d.pop("name")
 
         revenue_model = d.pop("revenueModel")
@@ -138,13 +137,6 @@ class DiscoveryCollectionItem:
             return cast(None | str | Unset, data)
 
         description = _parse_description(d.pop("description", UNSET))
-
-        _kind = d.pop("kind", UNSET)
-        kind: DiscoveryCollectionItemKind | Unset
-        if isinstance(_kind, Unset):
-            kind = UNSET
-        else:
-            kind = DiscoveryCollectionItemKind(_kind)
 
         def _parse_members(data: object) -> list[str] | None | Unset:
             if data is None:
@@ -194,10 +186,10 @@ class DiscoveryCollectionItem:
         discovery_collection_item = cls(
             collection_kind=collection_kind,
             display_name=display_name,
+            kind=kind,
             name=name,
             revenue_model=revenue_model,
             description=description,
-            kind=kind,
             members=members,
             price_per_1000=price_per_1000,
             price_range=price_range,
